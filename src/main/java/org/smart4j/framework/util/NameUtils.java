@@ -1,4 +1,4 @@
-package org.smart4j.chapter1.util;
+package org.smart4j.framework.util;
 
 /**
  * Created by tommy on 2015/9/2.
