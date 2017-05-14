@@ -1,14 +1,15 @@
 package org.smart4j.framework;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.smart4j.framework.bean.Data;
 import org.smart4j.framework.bean.Handler;
+import org.smart4j.framework.bean.Param;
 import org.smart4j.framework.bean.View;
 import org.smart4j.framework.helper.BeanHelper;
 import org.smart4j.framework.helper.ConfigHelper;
 import org.smart4j.framework.helper.ControllerHelper;
 import org.smart4j.framework.util.ReflectionUtil;
-
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -58,26 +59,49 @@ public class DispatcherServlet extends HttpServlet {
         }
         Class<?> controllerClass = handler.getClass();
         Object controller = BeanHelper.getBean(controllerClass);
+        Method method = handler.getActionMethod();
 
         //获取请求参数
         Map<String, Object> paramMap = getRequestParamMap(req);
+        Param param = new Param(paramMap);
 
-
-        Method method = handler.getActionMethod();
-        Object result = ReflectionUtil.invokeMethod(controller, method/*, param*/);
+        Object result = ReflectionUtil.invokeMethod(controller, method, param);
 
         //处理result的流转
+        processResult(result, req, resp);
+    }
+
+    private void processResult(Object result, HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
         if (result == null) {
             return;
         }
 
         if (result instanceof View) {
-
+            processView((View) result, req, resp);//返回jsp页面
         } else if (result instanceof Data) {
-
+            processData((Data) result, req, resp);//TODO
         } else {
             throw new RuntimeException("not support result type");
         }
+    }
+
+    private void processView(View view, HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
+        String path = view.getPath();
+        if (StringUtils.isEmpty(path)) {
+            return;
+        }
+        if (path.startsWith("/")) {
+            resp.sendRedirect(req.getContextPath() + path);
+        } else {
+            Map<String, Object> model = view.getModel();
+            for (Map.Entry<String, Object> entry : model.entrySet()) {
+                req.setAttribute(entry.getKey(), entry.getValue());
+            }
+            req.getRequestDispatcher(ConfigHelper.getAppJspPath() + path).forward(req, resp);
+        }
+    }
+
+    private void processData(Data result, HttpServletRequest req, HttpServletResponse resp) {
 
     }
 
@@ -96,8 +120,18 @@ public class DispatcherServlet extends HttpServlet {
         }
 
         String params[] = StringUtils.split(body, "&");
+        if (ArrayUtils.isEmpty(params)) {
+            return paramMap;
+        }
 
-        return null;
+        for (String param : params) {
+            String[] array = StringUtils.split(param, "=");
+            if (ArrayUtils.isNotEmpty(array) && array.length == 2) {
+                paramMap.put(array[0], array[1]);
+            }
+        }
+
+        return paramMap;
     }
 
 
