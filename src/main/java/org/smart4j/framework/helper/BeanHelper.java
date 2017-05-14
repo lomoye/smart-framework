@@ -1,8 +1,5 @@
 package org.smart4j.framework.helper;
 
-
-import org.smart4j.framework.bean.TestBeanService;
-import org.smart4j.framework.util.ClassUtil;
 import org.smart4j.framework.util.ReflectionUtil;
 
 import java.util.HashMap;
@@ -13,7 +10,7 @@ import java.util.Set;
  * Created by lomoye on 2017/5/13.
  * ^_^ Bean 助手类
  */
-public class BeanHelper {
+public final class BeanHelper {
     /**
      * 定义 Bean 映射 （用于存放Bean类和Bean实例的映射关系）
      */

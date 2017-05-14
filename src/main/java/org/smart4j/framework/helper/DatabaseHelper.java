@@ -25,7 +25,7 @@ import java.util.Properties;
  * Created by lomoye on 2017/5/12.
  * ^_^ 数据库操作助手类
  */
-public class DatabaseHelper {
+public final class DatabaseHelper {
     private static final Logger LOGGER = LoggerFactory.getLogger(DatabaseHelper.class);
 
     private static final QueryRunner QUERY_RUNNER = new QueryRunner();

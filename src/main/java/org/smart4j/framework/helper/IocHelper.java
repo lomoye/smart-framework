@@ -1,8 +1,6 @@
 package org.smart4j.framework.helper;
 
 import org.smart4j.framework.annotation.Inject;
-import org.smart4j.framework.bean.TestBeanService;
-import org.smart4j.framework.util.ClassUtil;
 import org.smart4j.framework.util.ReflectionUtil;
 
 import java.lang.reflect.Field;
