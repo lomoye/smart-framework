@@ -9,6 +9,7 @@ import org.smart4j.framework.bean.View;
 import org.smart4j.framework.helper.BeanHelper;
 import org.smart4j.framework.helper.ConfigHelper;
 import org.smart4j.framework.helper.ControllerHelper;
+import org.smart4j.framework.util.JsonUtil;
 import org.smart4j.framework.util.ReflectionUtil;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -19,6 +20,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.lang.reflect.Method;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -101,8 +103,19 @@ public class DispatcherServlet extends HttpServlet {
         }
     }
 
-    private void processData(Data result, HttpServletRequest req, HttpServletResponse resp) {
+    private void processData(Data result, HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        Object obj = result.getModel();
+        if (obj == null) {
+            return;
+        }
+        resp.setContentType("application/json");
+        resp.setCharacterEncoding("UTF-8");
+        PrintWriter writer = resp.getWriter();
+        String json = JsonUtil.toJson(obj);
 
+        writer.write(json);
+        writer.flush();
+        writer.close();
     }
 
     private Map<String, Object> getRequestParamMap(HttpServletRequest req) {
