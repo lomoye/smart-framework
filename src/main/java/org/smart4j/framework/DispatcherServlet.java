@@ -57,7 +57,7 @@ public class DispatcherServlet extends HttpServlet {
         if (handler == null) {
             return;
         }
-        Class<?> controllerClass = handler.getClass();
+        Class<?> controllerClass = handler.getControllerClass();
         Object controller = BeanHelper.getBean(controllerClass);
         Method method = handler.getActionMethod();
 
